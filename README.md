@@ -1,6 +1,6 @@
 # CSC2012-Project
 
-In the project directory, you can run:
+In the frontend directory, you can run:
 
 ### `npm start`
 

@@ -154,7 +154,7 @@ for image_file in test_image_files:
 predicted_class = predict_image(model, test_image_path)
 print(f"Predicted class: {predicted_class}")
 
-with open('train_generator.pkl', 'wb') as f:
-    pickle.dump(train_generator, f)
+# with open('train_generator.pkl', 'wb') as f:
+#     pickle.dump(train_generator, f)
 
 model.save('image_classifier.h5')

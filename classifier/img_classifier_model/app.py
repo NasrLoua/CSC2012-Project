@@ -144,13 +144,11 @@ def predict_image(model, image_path):
     return predicted_class
 
 
-
 #train_accuracy = history.history['accuracy'][-1]
 #val_accuracy = history.history['val_accuracy'][-1]
 
 #print(f"Training accuracy: {train_accuracy:.2%}")
 #print(f"Validation accuracy: {val_accuracy:.2%}")
-
 
 # Test the model on a new image
 test_dir = './classifier/img_classifier_model/Test'
@@ -165,17 +163,15 @@ predicted_class = predict_image(model, test_image_path)
 print(f"Predicted class: {predicted_class}")
 
 
-
 with open('class_indices.pkl', 'wb') as f:
     pickle.dump(train_generator.class_indices, f)
 
-    
-model.save('image_classifier.h5')
-print("This is the file")
-
-=======
-#with open('train_generator.pkl', 'wb') as f:
-#    pickle.dump(train_generator, f)
-
 
 model.save('image_classifier.h5')
+# print("This is the file")
+
+# with open('train_generator.pkl', 'wb') as f:
+# pickle.dump(train_generator, f)
+
+
+# model.save('image_classifier.h5')

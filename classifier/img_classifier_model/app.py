@@ -1,5 +1,6 @@
 import tensorflow as tf
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+import pickle
 from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -13,7 +14,7 @@ import glob
 import os
 from PIL import Image
 
-import cv2 
+import cv2
 
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import imshow
@@ -26,18 +27,18 @@ dirImage = './classifier/img_classifier_model/Train'
 images_path = os.listdir(dirImage)
 
 filenames = []
-filename=[]
+filename = []
 l = []
-c=np.zeros(5, int)
+c = np.zeros(5, int)
 for i in range(5):
-    f=[]
-    f+=glob.glob(dirImage+"/"+images_path[i]+"/*"+".jpg")
+    f = []
+    f += glob.glob(dirImage+"/"+images_path[i]+"/*"+".jpg")
     l.append(images_path[i])
-    c[i]+=len(f)
+    c[i] += len(f)
     filenames += f
 #     filenames += glob.glob(dirImage+"/"+images_path[i]+"/*"+".jpg")
-    #Create_Label
-label=[]
+    # Create_Label
+label = []
 for j in range(5):
     for k in range(c[j]):
         label.append(l[j])
@@ -50,7 +51,7 @@ data = pd.DataFrame({'path': filenames, 'class': label})
 # #     ForPredict = []
 #     Cardboard = []
 #     Plastics = []
-    
+
 #     im=[]
 
 #     for i, row in data.iterrows():
@@ -79,7 +80,7 @@ data = pd.DataFrame({'path': filenames, 'class': label})
 # #     ForPredict = np.array(ForPredict)
 #     Cardboard = np.array(Cardboard)
 #     Plastics = np.array(Plastics)
-    
+
 #     all_images = np.concatenate((Metal, Glass, Paper, Cardboard, Plastics)) #, ForPredict
 #     return all_images, im
 
@@ -87,7 +88,8 @@ data = pd.DataFrame({'path': filenames, 'class': label})
 # fig = plt.figure(figsize=(100,100))
 
 # Create the training and validation sets
-train_data, val_data = train_test_split(data, test_size=0.2, stratify=data['class'], random_state=42)
+train_data, val_data = train_test_split(
+    data, test_size=0.2, stratify=data['class'], random_state=42)
 
 # Set up the image data generators
 train_datagen = ImageDataGenerator(rescale=1./255)
@@ -99,12 +101,16 @@ img_width = 64
 batch_size = 32
 
 # Create data generators
-train_generator = train_datagen.flow_from_dataframe(train_data, x_col='path', y_col='class', target_size=(img_height, img_width), batch_size=batch_size, class_mode='categorical')
-val_generator = val_datagen.flow_from_dataframe(val_data, x_col='path', y_col='class', target_size=(img_height, img_width), batch_size=batch_size, class_mode='categorical')
+train_generator = train_datagen.flow_from_dataframe(train_data, x_col='path', y_col='class', target_size=(
+    img_height, img_width), batch_size=batch_size, class_mode='categorical')
+val_generator = val_datagen.flow_from_dataframe(val_data, x_col='path', y_col='class', target_size=(
+    img_height, img_width), batch_size=batch_size, class_mode='categorical')
+
 
 def build_model():
     model = tf.keras.Sequential([
-        layers.Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)),
+        layers.Conv2D(32, (3, 3), activation='relu',
+                      input_shape=(img_height, img_width, 3)),
         layers.MaxPooling2D((2, 2)),
         layers.Conv2D(64, (3, 3), activation='relu'),
         layers.MaxPooling2D((2, 2)),
@@ -113,17 +119,19 @@ def build_model():
         layers.Dense(64, activation='relu'),
         layers.Dense(5, activation='softmax')
     ])
-    
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
 
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
 
 
 model = build_model()
 model.summary()
 
 epochs = 10
-history = model.fit(train_generator, validation_data=val_generator, epochs=epochs)
+history = model.fit(
+    train_generator, validation_data=val_generator, epochs=epochs)
+
 
 def predict_image(model, image_path):
     img = Image.open(image_path).resize((img_width, img_height))
@@ -136,11 +144,12 @@ def predict_image(model, image_path):
     return predicted_class
 
 
-train_accuracy = history.history['accuracy'][-1]
-val_accuracy = history.history['val_accuracy'][-1]
 
-print(f"Training accuracy: {train_accuracy:.2%}")
-print(f"Validation accuracy: {val_accuracy:.2%}")
+#train_accuracy = history.history['accuracy'][-1]
+#val_accuracy = history.history['val_accuracy'][-1]
+
+#print(f"Training accuracy: {train_accuracy:.2%}")
+#print(f"Validation accuracy: {val_accuracy:.2%}")
 
 
 # Test the model on a new image
@@ -156,6 +165,7 @@ predicted_class = predict_image(model, test_image_path)
 print(f"Predicted class: {predicted_class}")
 
 
+
 with open('class_indices.pkl', 'wb') as f:
     pickle.dump(train_generator.class_indices, f)
 
@@ -163,4 +173,9 @@ with open('class_indices.pkl', 'wb') as f:
 model.save('image_classifier.h5')
 
 
+=======
+#with open('train_generator.pkl', 'wb') as f:
+#    pickle.dump(train_generator, f)
 
+
+model.save('image_classifier.h5')

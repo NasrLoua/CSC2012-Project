@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 # Load the saved model
 if os.path.isfile('C:/Users/darkp/Desktop/CSC2012-Project/image_classifier.h5'):
     try:
-        model = tf.keras.models.load_model('C:/Users/darkp/Desktop/CSC2012-Project/image_classifier.h5')
+        model = tf.keras.models.load_model('image_classifier.h5')
     except OSError as e:
         print("Error opening file:", e)
 else:

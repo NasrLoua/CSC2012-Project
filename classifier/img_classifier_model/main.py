@@ -92,6 +92,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 # Load the saved model
 model = tf.keras.models.load_model('image_classifier.h5')
 
+
 # Load the saved class indices
 with open('class_indices.pkl', 'rb') as f:
     class_indices = pickle.load(f)

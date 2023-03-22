@@ -3,7 +3,7 @@ from pymongo import MongoClient, errors
 from pymongo import MongoClient
 def get_database():
     try:
-        CONNECTION_STRING = "mongodb+srv://tidus400:s9926139j@psd2.rjbuny6.mongodb.net/?retryWrites=true&w=majority"
+        CONNECTION_STRING = "mongodb+srv://test:hOzAAWFmWthTqsg6@psd2.rjbuny6.mongodb.net/?retryWrites=true&w=majority"
     except OperationFailure as e:
         print("Bad Authentication")
 
@@ -51,7 +51,12 @@ def addUser(name, username, password):
     }
     collection_name.insert_one(user)
 
-  
+def incrementPoints(username, points):
+    dbname = get_database()
+    collection_name = dbname ['profile']
+    collection_name.update_one({'username': username}, {'$inc': {'points': points}})
+
+
 # This is added so that many files can reuse the function get_database()
 if __name__ == "__main__":   
   

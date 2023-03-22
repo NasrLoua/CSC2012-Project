@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block title %}Prediction{% endblock %} {% block
+content %}
+<h1>Recycleble Prediction</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <span class="border border-primary">
+        <img
+          src="{{ user_image }}"
+          alt="Selected Image"
+          class="img-thumbnail"
+        />
+      </span>
+    </div>
+
+    <div class="col-sm">
+      <h1>Item: <span class="badge badge-secondary">{{product}}</span></h1>
+    </div>
+  </div>
+</div>
+{% set active_page = 'prediction' %} {% endblock %}

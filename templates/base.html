@@ -1,7 +1,5 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -13,28 +11,11 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
-    <title>Quality Check</title>
+    <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <span class="border border-primary">
-            <img
-              src="{{ user_image }}"
-              alt="Selected Image"
-              class="img-thumbnail"
-            />
-          </span>
-        </div>
-
-        <div class="col-sm">
-          <h1>
-            Quality <span class="badge badge-secondary">{{product}}</span>
-          </h1>
-        </div>
-      </div>
-    </div>
+    {% include 'navbar.html' %}
+    <div class="container">{% block content %}{% endblock %}</div>
 
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

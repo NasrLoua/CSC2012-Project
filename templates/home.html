@@ -1,14 +1,8 @@
-<html>
-  <head>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
-    <title>Upload Image</title>
-  </head>
-  <body>
+{% extends 'base.html' %} {% block title %}Profile{% endblock %} {% block
+content %}
+<h1>Upload Image</h1>
+<div class="container mt-5">
+  <div class="row">
     <div class="col-sm">
       <h1>
         <span class="badge badge-danger">Recycleble Item Verification</span>
@@ -21,5 +15,6 @@
         <input type="submit" value="Upload" />
       </form>
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% set active_page = 'home' %} {% endblock %}

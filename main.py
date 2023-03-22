@@ -8,17 +8,19 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Load the saved model
-if os.path.isfile('C:/Users/darkp/Desktop/CSC2012-Project/image_classifier.h5'):
-    try:
-        model = tf.keras.models.load_model('image_classifier.h5')
-    except OSError as e:
-        print("Error opening file:", e)
-else:
-    print("File not found")
+try:
+    model = tf.keras.models.load_model('image_classifier.h5')
+except OSError as e:
+    print("Error opening file:", e)
 
-# Load the saved class indices
-with open('class_indices.pkl', 'rb') as f:
-    class_indices = pickle.load(f)
+
+# Load the saved model
+try:
+    with open('class_indices.pkl', 'rb') as f:
+        class_indices = pickle.load(f)
+except OSError as e:
+    print("Error opening file:", e)
+
 
 # Reverse the class_indices dictionary
 classes = {v: k for k, v in class_indices.items()}
@@ -81,7 +83,32 @@ def prediction():
         predicted_class = classes[np.argmax(prediction)]
         product = predicted_class
         print(product)
-    return render_template('predict.html', product = product, user_image = file_path_image)  
+    return render_template('prediction.html', product = product, user_image = file_path_image)  
+
+# Routes for main UI elements
+@app.route("/base")
+def index():
+    return render_template('base.html')
+
+@app.route("/",methods=['GET','POST'])
+def home():
+    return render_template('home.html')
+
+@app.route("/profile")
+def profile():
+    return render_template('profile.html')
+
+@app.route("/login")
+def login():
+    return render_template('login.html')
+
+@app.route("/register")
+def register():
+    return render_template('register.html')
+
+@app.route('/navbar')
+def navbar():
+    return render_template('navbar.html')
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

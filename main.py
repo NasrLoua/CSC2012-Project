@@ -1,10 +1,16 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, session, jsonify, send_from_directory, render_template, url_for, redirect
 from werkzeug.utils import secure_filename
 import pickle
 import os
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import database
+from database import get_database
+
+dbname = get_database()
+collection_profile = dbname ['profile']
+
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Load the saved model
@@ -31,6 +37,7 @@ img_height = 64
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './uploads'
+app.secret_key = 'my_secret_key'
 
 
 def allowed_file(filename):
@@ -90,21 +97,61 @@ def prediction():
 def index():
     return render_template('base.html')
 
+
 @app.route("/",methods=['GET','POST'])
 def home():
-    return render_template('home.html')
+    if 'username' in session:
+        username = session['username']
+        return render_template('home.html')
+    else:
+        return redirect(url_for('login'))
+    
 
 @app.route("/profile")
 def profile():
     return render_template('profile.html')
 
-@app.route("/login")
-def login():
-    return render_template('login.html')
 
-@app.route("/register")
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = database.findOneUser(username)
+        
+        if user and user['password'] == password:
+            session['username'] = username
+            print('Session username:', session)
+            return redirect(url_for('home'))
+        elif user:
+            return render_template('login.html', error='Invalid password')
+        else:
+            return render_template('login.html', error='Invalid username')
+    else:
+        return render_template('login.html')
+
+    
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    print('Session username:', session)
+    return redirect(url_for('login'))
+
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template('register.html')
+    if request.method == "POST":
+        name = request.form.get("name")
+        username = request.form.get("username")
+        password = request.form.get("password")
+        # validate and add user to the database
+        database.addUser(name, username, password)
+        # redirect to login page after successful registration
+        return redirect(url_for("login"))
+    else:
+        return render_template("register.html")
 
 @app.route('/navbar')
 def navbar():

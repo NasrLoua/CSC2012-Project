@@ -2,18 +2,23 @@ from flask import Flask, request, jsonify
 import numpy as np
 from PIL import Image
 import tensorflow as tf
+import pickle
 
 app = Flask(__name__)
 
 # Load the trained model
 model = tf.keras.models.load_model('image_classifier.h5')
 
+with open('class_indices.pkl', 'rb') as f:
+    class_indices = pickle.load(f)
+
+    
 img_height = 64
 img_width = 64
 batch_size = 32
 
 
-def predict_image(image):
+def predict_image(image, class_indices):
     img = image.resize((img_width, img_height))
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
@@ -29,8 +34,8 @@ def predict():
 
     image = Image.open(request.files['image']).convert('RGB')
 
-    predicted_class = predict_image(image)
-    class_indices = train_generator.class_indices
+    predicted_class = predict_image(image, class_indices)
+    class_indices = class_indices.class_indices
     classes = {v: k for k, v in class_indices.items()}
     predicted_category = classes[predicted_class]
 

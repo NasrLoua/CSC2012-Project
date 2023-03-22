@@ -161,6 +161,6 @@ with open('class_indices.pkl', 'wb') as f:
 
     
 model.save('image_classifier.h5')
-
+print("This is the file")
 
 

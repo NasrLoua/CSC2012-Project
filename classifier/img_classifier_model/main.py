@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
+import os
 import numpy as np
-import pickle
 from PIL import Image
 import tensorflow as tf
 
@@ -9,24 +9,40 @@ app = Flask(__name__)
 # Load the trained model
 model = tf.keras.models.load_model('image_classifier.h5')
 
-with open('train_generator.pkl', 'rb') as f:
-    train_generator = pickle.load(f)
-
 img_height = 64
 img_width = 64
 batch_size = 32
 
 
-def predict_image_type(image_path, train_generator):
-    img_width, img_height = 64, 64
-
-    img = Image.open(image_path).resize((img_width, img_height))
+def predict_image(image):
+    img = image.resize((img_width, img_height))
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
     prediction = model.predict(img_array)
-    class_indices = train_generator.class_indices
-    classes = {v: k for k, v in class_indices.items()}
-    predicted_class = classes[np.argmax(prediction)]
+    predicted_class = np.argmax(prediction)
+    return predicted_class
+
+
+@app.route("/", methods=['GET', 'POST'])
+def home():
+    return render_template('home.html')
+
+
+@app.route("/prediction", methods=['GET', 'POST'])
+def prediction():
+    if request.method == 'POST':
+        file = request.files['file']
+        filename = file.filename
+        file_path = os.path.join(
+            r'C:/Users/nasru/Documents/CSC2012-Project/classifier/img_classifier_model/uploads/', filename)
+        file.save(file_path)
+        print(file_path)
+        product = 'test'
+        print(product)
+    else:
+        file_path = "not found"
+        product = "Unclassified"
+    return render_template('predict.html', product=product, user_image=file.filename)
 
 
 @app.route('/predict', methods=['POST'])
@@ -35,13 +51,9 @@ def predict():
 
         return jsonify({'error': 'No image provided'}), 400
 
-    # image = Image.open(request.files['image']).convert('RGB')
+    image = Image.open(request.files['image']).convert('RGB')
 
-    image_path = 'path/to/your/image.jpg'
-    predicted_class = predict_image_type(image_path, train_generator)
-    print(f"Predicted class: {predicted_class}")
-
-    # predicted_class = predict_image_type(image, train_generator)
+    predicted_class = predict_image(image)
     class_indices = train_generator.class_indices
     classes = {v: k for k, v in class_indices.items()}
     predicted_category = classes[predicted_class]

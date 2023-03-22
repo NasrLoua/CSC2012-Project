@@ -173,9 +173,10 @@ with open('class_indices.pkl', 'wb') as f:
 model.save('image_classifier.h5')
 print("This is the file")
 
-=======
+
 #with open('train_generator.pkl', 'wb') as f:
 #    pickle.dump(train_generator, f)
 
 
 model.save('image_classifier.h5')
+print("This is the file")

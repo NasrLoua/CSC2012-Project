@@ -52,7 +52,7 @@ def addUser(name, username, password):
     "username" : username,
     "password" : password,
     "points" : 0,
-    "profile_pic":"/static/generic_profile_pic.png"
+    "profile_pic":"/static/profile_pics/generic_profile_pic.png"
     }
     collection_name.insert_one(user)
 

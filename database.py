@@ -3,6 +3,7 @@ import os
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient,errors
 import pymongo
+from bson import ObjectId
 
 def get_database():
     try:
@@ -42,6 +43,12 @@ def findOneUser(username):
     user = collection_name.find_one({'username': username})
     return user
 
+def findOneVoucher(id):
+    dbname = get_database()
+    collection_name = dbname['vouchers']
+    voucher = collection_name.find_one({'_id': ObjectId(id)})
+    return voucher
+
 
 def addUser(name, username, password):
     dbname = get_database()
@@ -72,6 +79,12 @@ def getAllOrderByPoints():
     dbname = get_database()
     collection_name = dbname['profile']
     x = collection_name.find().sort('points', pymongo.DESCENDING)
+    return x
+
+def getAllVouchers():
+    dbname = get_database()
+    collection_name = dbname['vouchers']
+    x = collection_name.find()
     return x
 
 # This is added so that many files can reuse the function get_database()

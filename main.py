@@ -33,7 +33,8 @@ img_height = 64
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['PROFILE_PICS'] = 'static/profile_pics'
+app.config['PROFILE_PICS_FOLDER'] = 'static/profile_pics'
+app.config['vOUCHER_FOLDER'] = 'static/voucher'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 app.secret_key = 'my_secret_key'
 
@@ -127,11 +128,23 @@ def profile():
     user = database.findOneUser(session['username'])
     return render_template('profile.html', user=user)
 
+
 @app.route("/redeem")
 def redeem():
     username = session.get('username')
     user = database.findOneUser(username)
-    return render_template('redeem.html', user=user)
+    vouchers = database.getAllVouchers()
+    print(vouchers)
+    return render_template('redeem.html', user=user,vouchers=vouchers)
+
+@app.route('/get_redemption_code/<string:voucher_id>', methods=['GET'])
+def get_redemption_code(voucher_id):
+    voucher = database.findOneVoucher(voucher_id)
+    if voucher is not None:
+        database.incrementPoints(session['username'],-(voucher['points_needed']) )
+        return jsonify({'redemption_code': voucher['redemption_code']})
+    else:
+        return jsonify({'error': 'Voucher not found'})
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -152,7 +165,6 @@ def login():
         return render_template('login.html')
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -164,6 +176,7 @@ def register():
     else:
         return render_template("register.html")
     
+
 @app.route('/change_profile_pic', methods=['POST'])
 def change_profile_pic():
     file = request.files['profile_pic']
@@ -176,15 +189,18 @@ def change_profile_pic():
         print('Allowed file types are png, jpg, jpeg')
     return redirect(url_for('profile'))
 
+
 @app.route('/navbar')
 def navbar():
     if(session['username']):
         user =  database.findOneUser(session['username'])
     return render_template('navbar.html', user = user)
 
+
 @app.route("/base")
 def index():
     return render_template('base.html')
+
 
 @app.route('/logout')
 def logout():
@@ -192,7 +208,9 @@ def logout():
     print('Session username:', session)
     return redirect(url_for('login'))
 
+
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(port=5001,debug=True)
+

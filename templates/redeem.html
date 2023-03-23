@@ -1,6 +1,57 @@
 {% extends 'base.html' %} {% block title %} Profile {% endblock %} {% block
 content %}
-<h1>Upload Image</h1>
-{% set active_page = 'home' %}
-<!-- TODO FILL UP CODE HERE -->
+<style>
+  .card-img-resize {
+    height: 200px;
+    width: 100%;
+    object-fit: contain;
+  }
+</style>
+<h1>Redemption</h1>
+{% set active_page = 'home' %} {% for voucher in vouchers %}
+<div class="card">
+  <img
+    src="{{ voucher['image'] }}"
+    class="card-img-top card-img-resize"
+    alt="{{ voucher['company'] }} voucher"
+  />
+  <div class="card-body">
+    <h5 class="card-title">{{ voucher['title'] }}</h5>
+    <p class="card-text">Company: {{ voucher['company'] }}</p>
+    <p class="card-text">Points needed: {{ voucher['points_needed'] }}</p>
+
+    {% if user['points'] >= voucher['points_needed'] %}
+    <p class="card-text">
+      Redemption code: <span id="redemption-code-{{ voucher['_id'] }}"></span>
+    </p>
+    <a
+      href="#"
+      class="btn btn-primary"
+      onclick="showRedemptionCode('{{ voucher['_id'] }}')"
+      >Redeem now</a
+    >
+    {% else %}
+    <p class="card-text">Not enough points to redeem</p>
+    {% endif %}
+  </div>
+</div>
+<br />
+{% endfor %}
+<script>
+  function showRedemptionCode(voucher_id) {
+    var redemptionCodeElement = document.getElementById(
+      "redemption-code-" + voucher_id
+    );
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        redemptionCodeElement.innerHTML = JSON.parse(
+          this.responseText
+        ).redemption_code;
+      }
+    };
+    xhr.open("GET", "/get_redemption_code/" + voucher_id, true);
+    xhr.send();
+  }
+</script>
 {% endblock %}

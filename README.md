@@ -6,6 +6,8 @@ This is a web application that uses computer vision to identify an image and awa
 
 ## Installation
 
+Without Docker:
+
 1. Clone the repository:
 
 ```
@@ -15,10 +17,21 @@ https://github.com/NasrLoua/CSC2012-Project.git
 2. Install the requirements:
 
 ```
+cd flask
 pip3 install -r requirements.txt
 ```
 
+With Docker:
+
+1. Clone the repository:
+
+```
+https://github.com/NasrLoua/CSC2012-Project.git
+```
+
 ## Usage
+
+Without Docker:
 
 1. Start the application:
 
@@ -37,6 +50,22 @@ password: test1!
 User Test 2
 username: test2
 password: test2!
+```
+
+With Docker:
+
+1. Start the application:
+
+```
+$ docker compose up -d
+```
+
+2. After the application starts, navigate to http://localhost:80 in your web browser or run:
+
+3. Stop and remove the containers:
+
+```
+$ docker compose down
 ```
 
 ## License

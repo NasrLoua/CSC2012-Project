@@ -68,26 +68,24 @@ def predict():
     else:
         return jsonify({'error': 'Invalid file format'}), 400
 
+
 @app.route("/prediction", methods=['GET', 'POST'])
 def prediction():
     if 'username' in session:
         username = session['username']
         user = database.findOneUser(username)
+    else:
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
-
         categories = ['Metal', 'Glass', 'Paper', 'Cardboard', 'Plastics']
         file = request.files['file']
-        if file.filename == '':
-            print('No file selected for uploading')
-            return redirect(request.url)
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
 
-            # CV command here
             img = Image.open(file_path).resize((img_width, img_height))
             img_array = np.array(img) / 255.0
             img_array = np.expand_dims(img_array, axis=0)
@@ -104,60 +102,36 @@ def prediction():
                 totalPoints = user['points']
 
             print('Image verified successfully')
-            return render_template('prediction.html',user=user, product=product, user_image=file_path, success=success,
-                           totalPoints=totalPoints)
+            return render_template('prediction.html', user=user, product=product, user_image=file_path, success=success, totalPoints=totalPoints)
         else:
             print('Allowed file types are png, jpg, jpeg')
             return redirect(url_for('home'))
+    else:
+        return redirect(url_for('home'))
+
     
 
 # Routes for main UI elements
-@app.route("/base")
-def index():
-    return render_template('base.html')
-
-
-@app.route("/",methods=['GET','POST'])
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    if 'username' in session:
-        username = session['username']
-        user = database.findOneUser(username)
-        users = database.getAllOrderByPoints()
-        return render_template('home.html',user = user, users = users)
-    else:
+    if 'username' not in session:
         return redirect(url_for('login'))
+    username = session['username']
+    user = database.findOneUser(username)
+    users = database.getAllOrderByPoints()
+    return render_template('home.html', user=user, users=users)
     
 
 @app.route("/profile")
 def profile():
     user = database.findOneUser(session['username'])
-    return render_template('profile.html',user = user)
-
-@app.route('/change_profile_pic', methods=['POST'])
-def change_profile_pic():
-    file = request.files['profile_pic']
-
-    if file.filename == '':
-        print('No file selected for uploading')
-        return redirect(request.url)
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['PROFILE_PICS'], filename))
-        
-        database.changeProfilePic(session['username'],filename)
-
-        print('Profile picture changed successfully')
-        return redirect(url_for('profile'))
-    else:
-        print('Allowed file types are png, jpg, jpeg')
-        return redirect(request.url)
+    return render_template('profile.html', user=user)
 
 @app.route("/redeem")
 def redeem():
-    if (session['username']):
-        user = database.findOneUser(session['username'])
-    return render_template('redeem.html',user = user)
+    username = session.get('username')
+    user = database.findOneUser(username)
+    return render_template('redeem.html', user=user)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -165,9 +139,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         user = database.findOneUser(username)
-        
         if user and user['password'] == password:
             session['username'] = username
             print('Session username:', session)
@@ -179,13 +151,6 @@ def login():
     else:
         return render_template('login.html')
 
-    
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    print('Session username:', session)
-    return redirect(url_for('login'))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -194,18 +159,38 @@ def register():
         name = request.form.get("name")
         username = request.form.get("username")
         password = request.form.get("password")
-        # validate and add user to the database
         database.addUser(name, username, password)
-        # redirect to login page after successful registration
         return redirect(url_for("login"))
     else:
         return render_template("register.html")
+    
+@app.route('/change_profile_pic', methods=['POST'])
+def change_profile_pic():
+    file = request.files['profile_pic']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['PROFILE_PICS'], filename))
+        database.changeProfilePic(session['username'], filename)
+        print('Profile picture changed successfully')
+    else:
+        print('Allowed file types are png, jpg, jpeg')
+    return redirect(url_for('profile'))
 
 @app.route('/navbar')
 def navbar():
     if(session['username']):
         user =  database.findOneUser(session['username'])
     return render_template('navbar.html', user = user)
+
+@app.route("/base")
+def index():
+    return render_template('base.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    print('Session username:', session)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

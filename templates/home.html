@@ -1,20 +1,60 @@
 {% extends 'base.html' %} {% block title %}Profile{% endblock %} {% block
 content %}
-<h1>Upload Image</h1>
+<h1>Dashboard</h1>
+{% set active_page = 'home' %}
 <div class="container mt-5">
   <div class="row">
-    <div class="col-sm">
+    <div class="col-sm-6">
       <h1>
-        <span class="badge badge-danger">Recycleble Item Verification</span>
+        <span class="badge badge-danger">Recyclable Item Verification</span>
       </h1>
-    </div>
-
-    <div class="col-sm">
       <form action="/prediction" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" />
+        <div id="file-preview"></div>
+        <br /><br />
+        <input type="file" name="file" id="file-input" />
+        <br /><br />
         <input type="submit" value="Upload" />
       </form>
     </div>
+    <div class="col-sm-6">
+      <h2>Leaderboard</h2>
+      <div style="height: 300px; overflow-y: scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user['name'] }}</td>
+              <td>{{ user['points'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
-{% set active_page = 'home' %} {% endblock %}
+<script>
+  var fileInput = document.getElementById("file-input");
+  var filePreview = document.getElementById("file-preview");
+
+  fileInput.addEventListener("change", function (event) {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+
+    reader.onload = function (event) {
+      var img = document.createElement("img");
+      img.src = event.target.result;
+      img.classList.add("img-thumbnail"); // add the img-thumbnail class
+      filePreview.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
+  });
+</script>
+{% endblock %}

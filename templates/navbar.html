@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Recycleble Item Verification</a>
+  <a class="navbar-brand" href="#">Recyclable Item Verification</a>
   <button
     class="navbar-toggler"
     type="button"
@@ -12,14 +12,17 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
+    <ul class="navbar-nav mr-auto">
+      {% if session['username'] %}
       <li class="nav-item {% if active_page == 'home' %}active{% endif %}">
         <a class="nav-link" href="/">Home</a>
       </li>
       <li class="nav-item {% if active_page == 'profile' %}active{% endif %}">
         <a class="nav-link" href="/profile">Profile</a>
       </li>
-      {% if session['username'] %}
+      <li class="nav-item {% if active_page == 'redeem' %}active{% endif %}">
+        <a class="nav-link" href="/redeem">Redeem</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="/logout">Logout</a>
       </li>
@@ -32,5 +35,20 @@
       </li>
       {% endif %}
     </ul>
+
+    {% if session['username'] %}
+    <ul class="navbar-nav ml-auto">
+      <a href="/profile">
+        <li class="nav-item d-flex align-items-center">
+          <img
+            src="{{ user['profile_pic'] }}"
+            class="rounded-circle mr-2"
+            style="height: 40px; width: 40px"
+          />
+          <p class="mb-0" style="color: whitesmoke">{{ user['name'] }}</p>
+        </li>
+      </a>
+    </ul>
+    {% endif %}
   </div>
 </nav>

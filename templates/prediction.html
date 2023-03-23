@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block title %}Prediction{% endblock %} {% block
 content %}
-<h1>Recycleble Prediction</h1>
+<h1>Recyclable Prediction</h1>
 <div class="container">
   <div class="row">
     <div class="col-sm">
@@ -15,6 +15,18 @@ content %}
 
     <div class="col-sm">
       <h1>Item: <span class="badge badge-secondary">{{product}}</span></h1>
+      {% if success %}
+      <p>
+        Congratulations! You have committed an act of recycling! You have
+        attained 10 points to your profile. You now have a total of {{
+        totalPoints }}
+      </p>
+      {% else %}
+      <p>
+        Sorry, this is not a recyclable item. Contact support if this is an
+        error!
+      </p>
+      {% endif %}
     </div>
   </div>
 </div>

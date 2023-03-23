@@ -1,4 +1,39 @@
 {% extends 'base.html' %} {% block title %}Profile{% endblock %} {% block
 content %}
 <h1>Profile Page</h1>
-{% set active_page = 'profile' %} {% endblock %}
+{% set active_page = 'profile' %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-4">
+      <img
+        src="{{ user['profile_pic'] }}"
+        alt="Profile Picture"
+        class="img-thumbnail"
+      />
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        action="{{ url_for('change_profile_pic') }}"
+      >
+        <div class="mb-3">
+          <label for="profile_pic" class="form-label"
+            >Change Profile Picture</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="profile_pic"
+            name="profile_pic"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Change Picture</button>
+      </form>
+    </div>
+    <div class="col-md-8">
+      <h2>{{ user['name'] }}</h2>
+      <p>Username: {{ user['username'] }}</p>
+      <p>Total Points: {{ user['points'] }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
